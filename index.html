@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset=utf-8 />
+    <title>Open space in and around Chicago: 1990-2013</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:100,200,500,600i|Pavanam' rel='stylesheet' type='text/css'>
+
+    <style>
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #2e202f;
+        font-family: 'Montserrat 200', Helvetica, sans-serif;
+        color: #f4f3f3;
+      }
+      h1,h2,h3,h4,h5,h6 {
+        font-family: 'Pavanam', 'Montserrat 600i', Helvetica, sans-serif;
+      }
+      h1 {
+        position: absolute;
+        z-index: 650;
+        margin: 10px 208px 0 12px;
+        padding: 8px 12px;
+        color: #f4f3f3;
+        font-size: 1.6em;
+        background: #505050;
+        border-radius: 5px;
+        box-shadow: 0 0 4px #464146;
+      }
+      h2 {
+        display: inline-block;
+        color: #f4f3f3;
+      }
+      footer {
+        position: absolute;
+        height: 100px;
+        padding: 18px;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        font-size: 0.8em;
+        text-align: right;
+        margin-left: 30%;
+        margin-right: 12px;
+      }
+      a {
+        text-decoration: none;
+        color: tomato;
+      }
+      a:hover{
+        text-decoration: underline;
+        opacity: 0.8;
+      }
+      p {
+        font-size: 1em;
+        color: #f4f3f3;
+        font-family: Montserrat;
+        font-weight: 200;
+      }
+
+      #map {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        bottom: 118px;
+      }
+      #ui-controls {
+        width: 156px;
+        padding: 4px 20px 4px 6px;
+        background: #818181;
+        opacity: 0.9;
+        box-shadow: 0 0 4px #2e202f;
+        border-radius: 5px;
+        color: #f4f3f3;
+      }
+
+      .legend {
+        padding: 6px 12px;
+        font-size: 1.1em;
+        background: #717171;
+        opacity: 0.9;
+        color: #f4f3f3;
+        box-shadow: 0 0 4px #2e202f;
+        border-radius: 5px;
+        width: 158px;
+        font-family: 'Montserrat';
+        font-weight: 100;
+      }
+      .legend h3 {
+        font-size: 1.2em;
+        line-height: 1.2em;
+        color: #f4f3f3;
+        margin: 4px 12px 4px auto;
+        /* text-align:center; */
+      }
+      .legend h3 span {
+        font-size: 1.4em;
+        margin: 6px 30px 0 0px;
+      }
+      .legend ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 14px 0 0 14px;
+      }
+      .legend li {
+        height: 28px;
+      }
+      .legend span {
+        width: 30px;
+        height: 20px;
+        float: left;
+        margin: 0 10px 0 6px;
+      }
+      .legend li span .swatch {
+        opacity: 1;
+      }
+      .year-slider {
+        width: 100%;
+      }
+      .slider-text {
+        margin: -2px -12px 4px 2px;
+        font-family: 'Montserrat';
+        font-weight: 500;
+        font-size: 1.1em;
+      }
+      .leaflet-tooltip {
+        font-family: 'Montserrat';
+        font-weight: 500;
+        border: 2px solid #2e202f;
+        background: greenyellow;
+        border-radius: 5px;
+      }
+      .leaflet-tooltip table {
+        border-collapse: collapse;
+        padding: 2px 4px;
+      }
+      .leaflet-tooltip thead {
+        background: darkgoldenrod;
+        font-size: 1.6em;
+        padding: 6px 8px;
+      }
+      .leaflet-tooltip tbody {
+        background: #f4f3f3;
+        padding: 4px 6px;
+      }
+      .leaflet-tooltip td {
+        margin-left: 6px;
+      }
+      .leaflet-tooltip tfoot {
+        background:#505050;
+        color: #f4f3f3;
+        font-size:1.4em;
+      }
+      .leaflet-tooltip .align-right {
+        text-align: right;
+        padding-right: 12px;
+      }
+      .pull-right {
+        float: right;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <h1>Open Space In and Around Chicago: Visualizing the Metropolitan Land Use Inventories, 1990 &ndash; 2013</h1>
+
+    <div id="map"></div>
+
+    <footer>
+      <p>Data from the <a target="_blank" href="https://www.cmap.illinois.gov/data/land-use/inventory">Chicago Metropolitan Agency for Planning (CMAP)</a> (years 1990, 2005, 2010, and 2013) was paired with 5-digit zip code boundaries from the <a target="_blank" href="https://www.census.gov">US Census Bureau</a>.</p>
+      <p>Map authored by <a target="_blank" href="https://www.kafunk.com">Katrina Funk</a> in partial fulfillment of MAP 673, Module 03.</p>
+      <p>Cool people @ <a target="_blank" href="https://newmapsplus.uky.edu">New Maps Plus</a>.</p>
+    </footer>
+
+    <div id="ui-controls">
+      <input type="range" min="0" max="3" value="0" step="1" class="year-slider"></input>
+      <h4 class="slider-text">
+        <span>1990</span>
+        <span class="pull-right">2013</span>
+      </h4>
+    </div>
+
+    <div id="legend"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.5/chroma.min.js"></script>
+    <script src="https://d3js.org/d3-array.v2.min.js"></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale.v3.min.js"></script>
+
+    <script>
+
+      var sliderScale = d3.scaleOrdinal()
+        .domain([0,1,2,3])
+        .range([1990,2005,2010,2013])
+
+      // map options
+      var options = {
+        center: [42, -87.8],
+        zoom: 9.8,
+        scrollWheelZoom: false,
+        zoomSnap: .1,
+        dragging: false,
+        zoomControl: false
+      }
+
+      // instantiate the Leaflet map
+      var map = L.map('map', options);
+
+      // request tiles and add to map -- not while projecting!
+      var tiles = L.tileLayer('https://api.mapbox.com/styles/v1/kafunk/cjgmqzcso000i2rrtpc6d0tst/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2FmdW5rIiwiYSI6ImNqYmc3dXJzczMzZWIzNHFmcmZuNjY3azMifQ.9i48EOQl4WCGZQqKRvuc_g',{
+        attribution: "&copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"}).addTo(map);
+
+      // add zoom control back in non-default position
+      map.addControl(L.control.zoom({position:'bottomright'}));
+
+      // AJAX request for GeoJSON data
+      $.getJSON("data/ne-il-zcta.json", function(mainGeo) {
+
+        Papa.parse('data/ne-il-cmap-os.csv', {
+
+          download: true,
+          header: true,
+          complete: function(attributes) {
+
+            processData(mainGeo,attributes);
+
+          }
+        }); // end of Papa.parse()
+
+      })  // end of $.getJSON()
+      .fail(function() {
+        // the data file failed to load
+        console.log("Oh dear. An error has occurred." );
+      });;
+
+
+      function processData(mainGeo,attributes) {
+
+        // loop through all the polygons
+        for (var i = 0; i < mainGeo.features.length; i++) {
+
+          // shorthand reference to geography properties
+          var props = mainGeo.features[i].properties;
+
+          // for each of the CSV data rows
+          for (var j = 0; j < attributes.data.length; j++) {
+
+            // if the unique geography ID and associated attribute ID match
+            if (props.geoid10 === attributes.data[j].geoid) {
+
+              // add zcta_area to attributes object
+              attributes.data[j].zcta_area = props.zcta_area;
+
+              // re-assign the data for that geography with associated attributes
+              mainGeo.features[i].properties = attributes.data[j];
+
+              // no need to keep looping, break from inner loop
+              break;
+
+            }
+
+          }
+
+        }
+
+        // empty array to store all the normed data values
+        var percents = [];
+
+        // iterate through all the polygons
+        mainGeo.features.forEach(function(layer) {
+
+          // iterate through all the props of each layer
+          for (var prop in layer.properties) {
+
+            // if the attribute meet specified criteria
+            if (prop.includes("total") && layer.properties[prop] !== 'tbi')  {
+
+              // normalize attribute value by current layer area
+              var normedVal = Number((layer.properties[prop]*100/layer.properties.zcta_area).toFixed(2));
+
+              // we don't want any NaNs, either
+              if (normedVal !== NaN) {
+                percents.push(normedVal);
+              }
+
+            }
+
+          }
+
+        });
+
+        // chroma-js
+        // var breaks = chroma.limits(percents, 'k', 6);
+        // inspired by above, but a litle cleaner
+        var breaks = [0,10,20,30,50,70,99.36];
+
+        var colorize = chroma.scale(chroma.brewer.BuGn).classes(breaks).mode('lab');
+
+        drawLegend(breaks,colorize);
+        drawMap(mainGeo,colorize);
+
+      }
+
+      function drawMap(mainGeo,colorize) {
+
+        // create Leaflet object with geometry data and add to map
+        var dataLayer = L.geoJson(mainGeo, {
+          style: function(feature) {
+            return {
+              color: 'dimgray',
+              weight: 1,
+              fillOpacity: 0.8,
+              fillColor: '#fff7fb'
+            };
+          }
+        }).addTo(map);
+
+        // first set the zoom/center to the dataLayer's extent
+        map.fitBounds(dataLayer.getBounds());
+
+        // then back the zoom level off a bit (since we're viewing the map full screen)
+        map.setZoom(map.getZoom() - .2);
+
+        createSliderUI(dataLayer,colorize);
+        updateMap(dataLayer, colorize, '1990');
+
+      }
+
+      function updateMap(dataLayer,colorize,currentYear) {
+
+        // loop through the polygons and apply a colorFill value to each one using chroma.js colorize function
+        dataLayer.eachLayer(function(layer) {
+
+          // shorthand
+          var props = layer.feature.properties;
+
+          var percentVal = Number(Number(((Number(props['os_' + currentYear + '_total']))*100)/(Number(props.zcta_area))).toFixed(2));
+
+          // color each polygon with appropriate colorFill value
+          layer.setStyle({
+            fillColor: colorize(percentVal)
+          });
+
+          var tooltipInfo = getTooltip(props,percentVal,currentYear);
+
+          // bind a tooltip to the layer with geography-specific information
+          layer.bindTooltip(tooltipInfo, {
+            // sticky property so tooltip follows the mouse
+            sticky: true,
+            tooltipAnchor: [200, 200]
+          });
+
+          layer.on('mouseover', function(e) {
+            e.target.setStyle({
+              color: 'whitesmoke',
+              fillColor: 'tomato',
+              fillOpacity: 0.7
+            })
+              .bringToFront()
+              .openTooltip();
+          });
+
+          layer.on('mouseout', function(e) {
+            dataLayer.resetStyle(e.target);
+            e.target.setStyle({
+              fillColor: colorize(percentVal)
+            })
+              .closeTooltip();
+          });
+
+        });
+
+      }  // end updateMap()
+
+      function getTooltip(props,percentVal,currentYear) {
+        var tooltip = "<table>" +
+        "<thead><tr>" +
+        "<td> ZIP CODE </td> " +
+        "<td> " + props.geoid + " </td>" +
+        "</tr></thead>" +
+        "<tbody><tr>" +
+        getSubText(props,currentYear) +
+        "</tr></tbody>" +
+        "<tfoot><tr>" +
+        "<td class='align-right'>Total </td>" +
+        "<td>" + percentVal.toLocaleString() + "&#37; </td></tr>" +
+        // "<tr id='tt-foot'>(Approximately " +
+        // props['os_' + currentYear + '_total'] +
+        // " square miles)</tr></tfoot>" +
+        "</table>";
+        return tooltip;
+      }
+
+      function getSubText(props,currentYear) {
+        var subText = '',
+           subCats = {
+             'cem': {
+               label: 'Cemeteries',
+               note: 'includes associated chapels and mausoleums',
+               contentCodes: {
+                 1990: ['1380'],
+                 rest: ['1360']
+               }
+             },
+             'rec': {
+               label: 'Recreation',
+               note: 'includes city parks, botanical gardens, arboreta, etc where more than half of turf is manicured/impervious',
+               contentCodes: {
+                 1990: ['3100','3110'],
+                 rest: ['3100']
+               }
+             },
+             'cons': {
+               label: 'Conservation',
+               note: 'includes forest preserves, nature preserves, other public lands where less than half of turf is manicured',
+               contentCodes: {
+                 1990: ['3200','3210'],
+                 rest: ['3300']
+               }
+             },
+             'priv': {
+               label: 'Private',
+               note: 'includes golf courses, private campgrounds, scout retreats, hunting lodges, etc; "low-impact" but not protected space',
+               contentCodes: {
+                 1990: ['3120'],
+                 rest: ['3200','3400']
+               }
+             },
+             'trail': {
+               label: 'Trails',
+               note: 'includes bike paths, linear corridors, abandoned rights of way not otherwise accounted for',
+               contentCodes: {
+                 1990: ['3211','3130'],
+                 rest: ['3500']
+               }
+             },
+             'water': {
+               label: 'Water',
+               note: 'includes non-parcelled water, wetlands on vacant/undeveloped private property',
+               contentCodes: {
+                 1990: ['4120','4130','5000','5100','5200','5300'],
+                 rest: ['5000','5100','5200','5300','4120','6200']
+               }
+             },
+             'other': {
+               label: 'Other',
+               note: 'includes non-parcelled open space and other vacant/undeveloped private property',
+               contentCodes: {
+                 1990: ['3000','4100','4110'],
+                 rest: ['3000','3600','4110','4140','6100']
+               }
+             }
+           },
+           catTotal = 'os_' + currentYear + '_';
+        for (var key in subCats) {
+          subText += "<tr><td class='align-right'>" + subCats[key].label + "</td>:" +
+          "<td>" + getPercent(props[catTotal + key],props.zcta_area).toLocaleString() + " &#37; </td>" +
+          "</tr>";
+        }
+        return subText;
+      }
+
+      function getPercent(what,ofWhat) {
+        return Number(Number((Number(what)*100)/
+          (Number(ofWhat))).toFixed(2));
+      }
+
+      function drawLegend(breaks,colorize) {
+
+        // create div element for legend using Leaflet JS
+        var legendControl = L.control({
+          position: 'topright'
+        });
+
+        legendControl.onAdd = function(map) {
+
+            var legend = L.DomUtil.create('div', 'legend');
+            return legend;
+
+        };
+
+        legendControl.addTo(map);
+
+        // select #legend div element and loop through break values to create list item for each data cluster
+        var legend = $('.legend').html("<h3><span>1990</span>Open Space by Zip Code</h3><ul>");
+
+        for (var i = 0; i < breaks.length - 1; i++) {
+
+          var color = colorize(breaks[i], breaks);
+
+          var classRange = '<li><span class="swatch" style="background:' +
+            color + '"></span> ' +
+            breaks[i].toLocaleString() + ' &ndash; ' +
+            breaks[i + 1].toLocaleString() + ' &#37; </li>'
+
+          $('.legend ul').append(classRange);
+        }
+
+        legend.append("</ul>");
+
+      } // end drawLegend()
+
+      function createSliderUI(dataLayer,colorize) {
+
+        var sliderControl = L.control({ position: 'topright'} );
+
+        sliderControl.onAdd = function(map) {
+
+            var slider = L.DomUtil.get("ui-controls");
+
+            L.DomEvent.disableScrollPropagation(slider);
+
+            L.DomEvent.disableClickPropagation(slider);
+
+            return slider;
+        };
+
+        sliderControl.addTo(map);
+
+        // ------ Listen for user interaction ------>
+
+        // select the form element
+        $(".year-slider")
+          .on("input change", function() {
+
+            // to be added soon: 2001 (if I can get .mdb file open) and 2015 (once released)
+
+            // pair input with closest value option
+            var currentYear = sliderScale(this.value);
+
+            $('.legend h3 span').html(currentYear);
+            updateMap(dataLayer, colorize, currentYear);
+
+          });
+
+      } // end createSliderUI()
+
+      // TODO
+        // add more info about data processing, add 2001 data, add 2015 data?, sticky footer, adjust zoom, footer margins, fix tooltip
+
+    </script>
+
+  </body>
+
+</html>
