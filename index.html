@@ -174,7 +174,9 @@
       .pull-right {
         float: right;
       }
-
+      .percent {
+        padding-left: 1px;
+      }
     </style>
 
   </head>
@@ -396,23 +398,28 @@
 
       }  // end updateMap()
 
-      function getTooltip(props,percentVal,currentYear) {
-        var tooltip = "<table>" +
-        "<thead><tr>" +
-        "<td> ZIP CODE </td> " +
-        "<td> " + props.geoid + " </td>" +
-        "</tr></thead>" +
-        "<tbody><tr>" +
-        getSubText(props,currentYear) +
-        "</tr></tbody>" +
-        "<tfoot><tr>" +
-        "<td class='align-right'>Total </td>" +
-        "<td>" + percentVal.toLocaleString() + "&#37; </td></tr>" +
-        // "<tr id='tt-foot'>(Approximately " +
-        // props['os_' + currentYear + '_total'] +
-        // " square miles)</tr></tfoot>" +
-        "</table>";
-        return tooltip;
+      function getTooltip(props, percentVal, currentYear) {
+        return `
+          <table>
+            <thead>
+              <tr>
+                <th colspan="2">ZIP CODE ${props.geoid}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${getSubText(props,currentYear)}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class='align-right'>Total:</td>
+                <td>${percentVal.toLocaleString()}<span class='percent'>&#37;</span></td>
+              </tr>
+            </tfoot>
+          </table>
+        `;
+        // <tr id='tt-foot'>
+        //  <td>(Approximately ${props['os_' + currentYear + '_total']} square miles)</td>
+        // </tr>
       }
 
       function getSubText(props,currentYear) {
@@ -477,8 +484,8 @@
            },
            catTotal = 'os_' + currentYear + '_';
         for (var key in subCats) {
-          subText += "<tr><td class='align-right'>" + subCats[key].label + "</td>:" +
-          "<td>" + getPercent(props[catTotal + key],props.zcta_area).toLocaleString() + " &#37; </td>" +
+          subText += "<tr><td class='align-right'>" + subCats[key].label + ":</td>" +
+          "<td>" + getPercent(props[catTotal + key],props.zcta_area).toLocaleString() + "<span class='percent'>&#37;</span></td>" +
           "</tr>";
         }
         return subText;
