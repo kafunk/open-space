@@ -123,6 +123,8 @@
       }
       .year-slider {
         width: 100%;
+        accent-color: #cbf078;
+        cursor: pointer;
       }
       .slider-text {
         margin: -2px -12px 4px 2px;
@@ -134,17 +136,18 @@
         font-family: 'Montserrat';
         font-weight: 500;
         border: 2px solid #2e202f;
-        background: greenyellow;
+        background: #cbf078;
         border-radius: 5px;
       }
       .leaflet-tooltip table {
         border-collapse: collapse;
         padding: 2px 4px;
       }
-      .leaflet-tooltip thead {
-        background: darkgoldenrod;
+      .leaflet-tooltip th {
+        color: black;
         font-size: 1.6em;
-        padding: 6px 8px;
+        padding: 6px 6px 8px;
+        line-height: 1.1;
       }
       .leaflet-tooltip tbody {
         background: #f4f3f3;
@@ -152,6 +155,12 @@
       }
       .leaflet-tooltip td {
         margin-left: 6px;
+      }
+      .leaflet-tooltip tr:first-child td {
+        padding-top: 4px;
+      }
+      .leaflet-tooltip tr:last-child td {
+        padding-bottom: 4px;
       }
       .leaflet-tooltip tfoot {
         background:#505050;
